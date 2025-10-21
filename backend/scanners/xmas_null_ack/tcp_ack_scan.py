@@ -5,9 +5,7 @@ import ipaddress
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 
 def ack_scan(target_ip, port):
-    """
-    Performs a TCP ACK scan, supporting both IPv4 and IPv6.
-    """
+  
     try:
         # Detect IP version and build the correct packet
         ip_addr = ipaddress.ip_address(target_ip)
@@ -16,7 +14,7 @@ def ack_scan(target_ip, port):
         else:
             ip_packet = IPv6(dst=target_ip)
 
-        tcp_packet = TCP(dport=port, flags="A") # "A" for ACK
+        tcp_packet = TCP(dport=port, flags="A") 
         packet = ip_packet / tcp_packet
         
         response = sr1(packet, timeout=2, verbose=0)
@@ -27,7 +25,7 @@ def ack_scan(target_ip, port):
         if response.haslayer(TCP) and response.getlayer(TCP).flags == 0x4: # RST
             return {"port": port, "status": "Unfiltered"}
             
-        # Check for ICMPv4 or ICMPv6 Destination Unreachable messages
+        # Check for ICMPv4 or ICMPv6 unreachable 
         if response.haslayer(ICMP) or response.haslayer(ICMPv6DestUnreach):
             return {"port": port, "status": "Filtered"}
 

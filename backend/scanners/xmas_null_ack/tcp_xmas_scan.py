@@ -5,9 +5,7 @@ import ipaddress
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 
 def xmas_scan(target_ip, port):
-    """
-    Performs a TCP Xmas scan, supporting both IPv4 and IPv6.
-    """
+  
     try:
         # Detect IP version and build the correct packet
         ip_addr = ipaddress.ip_address(target_ip)
@@ -16,7 +14,7 @@ def xmas_scan(target_ip, port):
         else:
             ip_packet = IPv6(dst=target_ip)
 
-        tcp_packet = TCP(dport=port, flags="FPU") # FIN, PSH, URG
+        tcp_packet = TCP(dport=port, flags="FPU") 
         packet = ip_packet / tcp_packet
 
         response = sr1(packet, timeout=2, verbose=0)

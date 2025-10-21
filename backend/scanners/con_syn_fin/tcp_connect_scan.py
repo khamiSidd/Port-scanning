@@ -2,18 +2,16 @@ import socket
 from datetime import datetime
 
 def connect_scan(target_ip, port):
-    """
-    Performs a TCP Connect scan on a single port, supporting both IPv4 and IPv6.
-    """
-    sock = None  # Initialize sock to None
+  
+    sock = None  
     try:
-        # MODIFICATION: Determine address family for IPv4/IPv6
+        # Determine address family for IPv4/IPv6
         addr_info = socket.getaddrinfo(target_ip, port, socket.AF_UNSPEC, socket.SOCK_STREAM)
         family, socktype, proto, canonname, sockaddr = addr_info[0]
 
         start_time = datetime.now()
         
-        # MODIFICATION: Create socket with the correct family
+        # Create socket with the correct family
         sock = socket.socket(family, socktype, proto)
         sock.settimeout(1)
         sock.connect(sockaddr)

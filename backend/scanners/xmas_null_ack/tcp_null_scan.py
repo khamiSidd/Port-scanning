@@ -5,9 +5,7 @@ import ipaddress
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 
 def null_scan(target_ip, port):
-    """
-    Performs a TCP Null scan, supporting both IPv4 and IPv6.
-    """
+   
     try:
         # Detect IP version and build the correct packet
         ip_addr = ipaddress.ip_address(target_ip)
