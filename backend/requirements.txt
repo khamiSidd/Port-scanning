@@ -1,3 +1,5 @@
 Flask==2.2.2
 Flask-Cors==3.0.10
 scapy==2.5.0
+bcrypt==5.0.0
+PyJWT==2.8.0

@@ -12,6 +12,7 @@ export const exportToCSV = (results, targetIp) => {
   // Create CSV header
   const headers = ['Port', 'Status', 'Latency (ms)'];
   
+  // Create CSV rows
   const csvRows = results.map(result => {
     return [
       result.port,
