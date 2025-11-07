@@ -58,8 +58,6 @@
   color: #fecaca;
 }
 
-/* --- Add this to Navbar.css --- */
-
 .nav-last-login {
   font-size: 0.8rem;
   color: #93c5fd; /* Light blue */
@@ -67,7 +65,6 @@
   white-space: nowrap;
 }
 
-/* Optional: Make it hide on small screens */
 @media (max-width: 768px) {
   .nav-last-login {
     display: none;

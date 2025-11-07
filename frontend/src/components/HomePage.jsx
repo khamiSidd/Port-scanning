@@ -2,33 +2,40 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const scanCategories = [
-    {
-      title: "Connection-Based Scans",
-      scans: [
-        { name: "TCP Connect", description: "Complete TCP three-way handshake" },
-        { name: "TCP SYN", description: "Half-open SYN scan (stealth)" },
-        { name: "TCP FIN", description: "FIN flag scan for firewall bypass" }
-      ]
-    },
-    {
-      title: "Xmas & Flag-Based Scans",
-      scans: [
-        { name: "TCP Xmas", description: "FIN, PSH, URG flags set" },
-        { name: "TCP Null", description: "No flags set" },
-        { name: "TCP ACK", description: "ACK flag for firewall detection" }
-      ]
-    },
-    {
-      title: "Advanced Scans",
-      scans: [
-        { name: "TCP Window", description: "Window size analysis" },
-        { name: "UDP", description: "UDP port scanning" },
-        { name: "Idle", description: "Zombie host stealth scan" }
-      ]
-    }
+  {
+    title: 'Connection-Based Scans',
+    scans: [
+      { name: 'TCP Connect', description: 'Complete TCP three-way handshake' },
+      { name: 'TCP SYN', description: 'Half-open SYN scan (stealth)' },
+      { name: 'TCP FIN', description: 'FIN flag scan for firewall bypass' },
+    ],
+  },
+  {
+    title: 'Xmas & Flag-Based Scans',
+    scans: [
+      { name: 'TCP Xmas', description: 'FIN, PSH, URG flags set' },
+      { name: 'TCP Null', description: 'No flags set' },
+      { name: 'TCP ACK', description: 'ACK flag for firewall detection' },
+    ],
+  },
+  {
+    title: 'Advanced Scans',
+    scans: [
+      { name: 'TCP Window', description: 'Window size analysis' },
+      { name: 'UDP', description: 'UDP port scanning' },
+      { name: 'Idle', description: 'Zombie host stealth scan' },
+    ],
+  },
+  {
+    title: 'Host Discovery',
+    scans: [
+      { name: 'IP Protocol Scan', description: 'Detect supported IP protocols' },
+      { name: 'OS-Detection', description: 'Guess OS using packet TTL' },
+    ],
+  },
 ];
 
-const HomePage = () => {
+function HomePage() {
   const navigate = useNavigate();
   return (
     <div className="home-page">
@@ -43,13 +50,14 @@ const HomePage = () => {
       </div>
 
       <div className="scan-categories">
-        {scanCategories.map((category, idx) => (
-          <div key={idx} className="category-section">
+        {scanCategories.map((category) => (
+          <div key={category.title} className="category-section">
             <h2 className="category-title">{category.title}</h2>
             <div className="scan-grid">
               {category.scans.map((scan) => (
                 <button
                   key={scan.name}
+                  type="button"
                   onClick={() => navigate(`/scan/${scan.name}`)}
                   className="scan-card"
                 >
@@ -64,6 +72,6 @@ const HomePage = () => {
       </div>
     </div>
   );
-};
+}
 
 export default HomePage;

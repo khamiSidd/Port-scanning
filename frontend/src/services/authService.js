@@ -1,12 +1,16 @@
-// Define your backend's base URL
-// Make sure this matches where your Python (Flask/FastAPI) server is running
-const API_URL = 'http://127.0.0.1:5000/api';
+/**
+ * Authentication Service
+ * Handles API calls for user authentication and token management
+ */
+
+// Backend API base URL
+const API_URL = 'http://[::1]:5000/api';
 
 /**
- * Registers a new user
- * @param {string} email
- * @param {string} password
- * @returns {Promise<object>}
+ * Registers a new user and sends OTP via email
+ * @param {string} email - User's email address
+ * @param {string} password - User's password
+ * @returns {Promise<Object>} Registration response
  */
 export const register = async (email, password) => {
   const response = await fetch(`${API_URL}/register`, {
@@ -18,10 +22,10 @@ export const register = async (email, password) => {
 };
 
 /**
- * Verifies the user's OTP
- * @param {string} email
- * @param {string} otp
- * @returns {Promise<object>}
+ * Verifies user email with 6-digit OTP (expires in 10 minutes)
+ * @param {string} email - User's email address
+ * @param {string} otp - 6-digit OTP code
+ * @returns {Promise<Object>} Verification response
  */
 export const verifyOtp = async (email, otp) => {
   const response = await fetch(`${API_URL}/verify-otp`, {
@@ -33,10 +37,11 @@ export const verifyOtp = async (email, otp) => {
 };
 
 /**
- * Logs in a user
- * @param {string} email
- * @param {string} password
- * @returns {Promise<object>}
+ * Authenticates user and stores JWT token in localStorage
+ * @param {string} email - User's email address
+ * @param {string} password - User's password
+ * @returns {Promise<Object>} Login response with token
+ * @throws {Error} Login failure error
  */
 export const login = async (email, password) => {
   const response = await fetch(`${API_URL}/login`, {
@@ -51,7 +56,8 @@ export const login = async (email, password) => {
   }
 
   const data = await response.json();
-  // Store the token in localStorage
+
+  // Store authentication data
   if (data.token) {
     localStorage.setItem('authToken', data.token);
   }
@@ -60,24 +66,25 @@ export const login = async (email, password) => {
   } else {
     localStorage.removeItem('lastLogin');
   }
+
   return data;
 };
 
 /**
- * Logs out a user by removing the token
+ * Logs out user by removing token from localStorage
  */
 export const logout = () => {
   localStorage.removeItem('authToken');
 };
 
 /**
- * Gets the current token
- * @returns {string|null}
+ * Gets stored JWT token
+ * @returns {string|null} JWT token or null
  */
-export const getToken = () => {
-  return localStorage.getItem('authToken');
-};
+export const getToken = () => localStorage.getItem('authToken');
 
-export const getLastLogin = () => {
-  return localStorage.getItem('lastLogin');
-};
+/**
+ * Gets last login timestamp
+ * @returns {string|null} ISO timestamp or null
+ */
+export const getLastLogin = () => localStorage.getItem('lastLogin');

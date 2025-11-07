@@ -1,3 +1,7 @@
+/**
+ * App Component
+ * Root component that handles application routing and layout
+ */
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import HomePage from './components/HomePage';
@@ -8,38 +12,35 @@ import VerifyOTPPage from './components/VerifyOTPPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import './App.css';
-import './components/Navbar.css'; // Import the new navbar styles
+import './components/Navbar.css';
 
 function App() {
   return (
     <div className="App">
       <Navbar />
       <Routes>
-        {/* Public Routes */}
+        {/* Public routes - accessible without authentication */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/verify-otp" element={<VerifyOTPPage />} />
 
-        {/* Protected Routes */}
+        {/* Protected routes - require authentication */}
         <Route
           path="/"
-          element={
+          element={(
             <ProtectedRoute>
               <HomePage />
             </ProtectedRoute>
-          }
+          )}
         />
         <Route
-          path="/scan/:scanType" // Example: make ScanPage dynamic
-          element={
+          path="/scan/:scanType"
+          element={(
             <ProtectedRoute>
               <ScanPage />
             </ProtectedRoute>
-          }
+          )}
         />
-
-        {/* Add a 404 Not Found route later */}
-        {/* <Route path="*" element={<NotFoundPage />} /> */}
       </Routes>
     </div>
   );

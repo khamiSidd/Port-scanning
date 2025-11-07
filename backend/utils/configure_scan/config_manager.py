@@ -7,14 +7,21 @@ from scanners.xmas_null_ack.tcp_ack_scan import ack_scan
 from scanners.win_idle_udp.tcp_window_scan import window_scan
 from scanners.win_idle_udp.udp_scan import udp_scan
 from scanners.win_idle_udp.idle_scan import idle_scan
+from scanners.host_discovery.ip_protocol_scan import (
+    scan as ip_protocol_scan)
+from scanners.host_discovery.os_fingerprint_scan import (
+    scan as os_detection_scan)
 
 # Import validators to use them here
-from utils.input_validation.validators import parse_ports, validate_ip_address
+from utils.input_validation.validators import (
+    parse_ports, validate_ip_address)
+
 
 def configure_scan(request_data):
     """
     Validates request data and configures the scan.
-    Returns a dictionary with the target_ip, ports_to_scan, and the selected scanner function.
+    Returns a dictionary with the target_ip, ports_to_scan, and the
+    selected scanner function.
     Raises ValueError on invalid input.
     """
     target_ip = request_data.get('target_ip')
@@ -23,15 +30,20 @@ def configure_scan(request_data):
     zombie_ip = request_data.get('zombie_ip')
 
     # Validate Inputs
-    if not all([target_ip, port_string, scan_type]):
-        raise ValueError("Missing required fields: target_ip, ports, scan_type")
-    
-    if not validate_ip_address(target_ip):
-        raise ValueError("Invalid target IP address format (must be IPv4 or IPv6)")
+    if not target_ip or not scan_type:
+        raise ValueError("Missing required fields: target_ip, scan_type")
 
-    ports_to_scan = parse_ports(port_string)
-    if not ports_to_scan:
-        raise ValueError("No valid ports specified")
+    if not validate_ip_address(target_ip):
+        raise ValueError(
+            "Invalid target IP address format (must be IPv4 or IPv6)")
+
+    ports_to_scan = []
+    if scan_type not in ["IP Protocol Scan", "OS-Detection"]:
+        if not port_string:
+            raise ValueError(f"port(s) are required for {scan_type}")
+        ports_to_scan = parse_ports(port_string)
+        if not ports_to_scan:
+            raise ValueError("No valid ports specified")
 
     # Select Scanner (The Core of Configuration)
     scan_functions = {
@@ -43,13 +55,16 @@ def configure_scan(request_data):
         "TCP ACK": ack_scan,
         "TCP Window": window_scan,
         "UDP": udp_scan,
-        "Idle": idle_scan
+        "Idle": idle_scan,
+        "OS-Detection": os_detection_scan,
+        "IP Protocol Scan": ip_protocol_scan
     }
-    
+
     selected_scanner = scan_functions.get(scan_type)
+
     if not selected_scanner:
         raise ValueError("Invalid scan type")
-    
+
     # Handle Scan-Specific Configuration
     if scan_type == "Idle" and not zombie_ip:
         raise ValueError("Zombie IP is required for Idle Scan")

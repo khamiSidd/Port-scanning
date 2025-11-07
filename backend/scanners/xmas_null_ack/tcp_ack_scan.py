@@ -2,10 +2,11 @@ from scapy.all import sr1, IP, TCP, ICMP, IPv6, ICMPv6DestUnreach
 import logging
 import ipaddress
 
-logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
+logging.getLogger("scapy.runtime").setLevel(logging.ERROR) #to keep the outputs clean
+
 
 def ack_scan(target_ip, port):
-  
+
     try:
         # Detect IP version and build the correct packet
         ip_addr = ipaddress.ip_address(target_ip)
@@ -14,19 +15,27 @@ def ack_scan(target_ip, port):
         else:
             ip_packet = IPv6(dst=target_ip)
 
-        tcp_packet = TCP(dport=port, flags="A") 
+        tcp_packet = TCP(dport=port, flags="A")
         packet = ip_packet / tcp_packet
-        
+
         response = sr1(packet, timeout=2, verbose=0)
+        print(f"DEBUG - Response: {response}")
+        if response:
+            print(f"DEBUG - Response show():")
+            response.show()
+            print(f"DEBUG - Response show2():")
+            response.show2()
 
         if response is None:
             return {"port": port, "status": "Filtered"}
-            
-        if response.haslayer(TCP) and response.getlayer(TCP).flags == 0x4: # RST
+
+        if response.haslayer(TCP) and \
+                response.getlayer(TCP).flags == 0x4:  # RST
             return {"port": port, "status": "Unfiltered"}
-            
-        # Check for ICMPv4 or ICMPv6 unreachable 
-        if response.haslayer(ICMP) or response.haslayer(ICMPv6DestUnreach):
+
+        # Check for ICMPv4 or ICMPv6 unreachable
+        if response.haslayer(ICMP) or \
+                response.haslayer(ICMPv6DestUnreach):
             return {"port": port, "status": "Filtered"}
 
         return {"port": port, "status": "Filtered"}

@@ -1,18 +1,23 @@
 import React from 'react';
-import { useAuth } from '../context/AuthContext';
+import PropTypes from 'prop-types';
 import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-const ProtectedRoute = ({ children }) => {
+function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
 
   if (!isAuthenticated) {
-    // Redirect them to the /login page, but save the current location
-    // so we can send them back after they log in
+    // Redirect the unauthenticated user to the /login page, but saving 
+    // the current location so we can send them back after they log in
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return children;
+}
+
+ProtectedRoute.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 export default ProtectedRoute;

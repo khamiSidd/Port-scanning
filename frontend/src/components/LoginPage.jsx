@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-const LoginPage = () => {
+function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -53,11 +53,13 @@ const LoginPage = () => {
           </button>
         </div>
         <p className="auth-switch-link">
-          Don't have an account? <Link to="/register">Register</Link>
+          Don&apos;t have an account?
+          {' '}
+          <Link to="/register">Register</Link>
         </p>
       </form>
     </div>
   );
-};
+}
 
 export default LoginPage;

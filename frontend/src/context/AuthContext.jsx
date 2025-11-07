@@ -1,25 +1,67 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+/**
+ * AuthContext - Authentication Context Provider
+ *
+ * Manages global authentication state for the application including:
+ * - User authentication status
+ * - JWT token management
+ * - Login, registration, and OTP verification
+ * - Last login timestamp tracking
+ * - Token persistence across browser sessions
+ *
+ * This context provides authentication functionality to all child components
+ * and handles token storage/retrieval via localStorage.
+ *
+ * @module AuthContext
+ */
+import React, {
+  createContext, useContext, useState, useEffect, useMemo,
+} from 'react';
+import PropTypes from 'prop-types';
 import * as authService from '../services/authService';
 
+// Create authentication context
 const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(authService.getToken());
-  const [isAuthenticated, setIsAuthenticated] = useState(!!token);
-  const [isLoading, setIsLoading] = useState(false);
-  const [lastLogin, setLastLogin] = useState(authService.getLastLogin());
+/**
+ * AuthProvider Component
+ *
+ * Wraps the application to provide authentication state and methods
+ * to all child components via React Context API.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {React.ReactNode} props.children - Child components to wrap
+ */
+export function AuthProvider({ children }) {
+  // Authentication state management
+  const [token, setToken] = useState(authService.getToken()); // JWT token from localStorage
+  const [isAuthenticated, setIsAuthenticated] = useState(!!token); // Authentication status
+  const [isLoading, setIsLoading] = useState(false); // Loading state for async operations
+  const [lastLogin, setLastLogin] = useState(authService.getLastLogin()); // Last login timestamp
 
-  // This effect runs on app load to validate any existing token
-  // For a more secure app, you'd also verify this token with the backend
+  /**
+   * Effect: Initialize authentication state on app load
+   * Validates any existing token from localStorage and restores session
+   * For enhanced security, consider adding token validation with backend
+   */
   useEffect(() => {
-    const token = authService.getToken();
-    if (token) {
-      setToken(token);
+    const storedToken = authService.getToken();
+    if (storedToken) {
+      setToken(storedToken);
       setIsAuthenticated(true);
       setLastLogin(authService.getLastLogin());
     }
   }, []);
 
+  /**
+   * Authenticates user with email and password
+   * Stores token and updates authentication state on success
+   *
+   * @param {string} email - User's email address
+   * @param {string} password - User's password
+   * @returns {Promise<Object>} Response data containing token and lastLogin
+   * @throws {Error} Authentication error from API
+   */
   const login = async (email, password) => {
     setIsLoading(true);
     try {
@@ -35,6 +77,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Registers a new user account
+   * Sends OTP to user's email for verification
+   *
+   * @param {string} email - User's email address
+   * @param {string} password - User's chosen password
+   * @returns {Promise<Object>} Response data with success status and message
+   * @throws {Error} Registration error from API
+   */
   const register = async (email, password) => {
     setIsLoading(true);
     try {
@@ -47,6 +98,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Verifies user's email with OTP code
+   * Completes the registration process by validating the OTP
+   *
+   * @param {string} email - User's email address
+   * @param {string} otp - 6-digit OTP code from email
+   * @returns {Promise<Object>} Response data with verification status
+   * @throws {Error} Verification error from API (invalid/expired OTP)
+   */
   const verifyOtp = async (email, otp) => {
     setIsLoading(true);
     try {
@@ -59,6 +119,10 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Logs out the current user
+   * Clears token from localStorage and resets authentication state
+   */
   const logout = () => {
     authService.logout();
     setToken(null);
@@ -66,7 +130,11 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
   };
 
-  const value = {
+  /**
+   * Memoized context value to prevent unnecessary re-renders
+   * Only recomputes when dependencies change
+   */
+  const value = useMemo(() => ({
     token,
     isAuthenticated,
     isLoading,
@@ -75,11 +143,22 @@ export const AuthProvider = ({ children }) => {
     register,
     verifyOtp,
     logout,
-  };
+  }), [token, isAuthenticated, isLoading, lastLogin]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+// PropTypes validation for AuthProvider
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+/**
+ * Custom hook to access authentication context
+ * Must be used within AuthProvider component tree
+ *
+ * @returns {Object} Authentication context value with state and methods
+ * @example
+ * const { isAuthenticated, login, logout } = useAuth();
+ */
+export const useAuth = () => useContext(AuthContext);

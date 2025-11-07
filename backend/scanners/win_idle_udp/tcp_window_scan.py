@@ -4,8 +4,9 @@ import ipaddress
 
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 
+
 def window_scan(target_ip, port):
-   
+
     try:
         # Detect IP version and build the correct packet
         ip_addr = ipaddress.ip_address(target_ip)
@@ -20,11 +21,11 @@ def window_scan(target_ip, port):
         response = sr1(packet, timeout=2, verbose=0)
 
         if response is not None and response.haslayer(TCP):
-            if response.getlayer(TCP).window > 0:
+            if response.getlayer(TCP).window > 0:  # Window size > 0
                 return {"port": port, "status": "Open"}
-            else: # Window size is 0
+            else:  # Window size is 0
                 return {"port": port, "status": "Closed"}
-        
+
         return {"port": port, "status": "Filtered"}
 
     except Exception:

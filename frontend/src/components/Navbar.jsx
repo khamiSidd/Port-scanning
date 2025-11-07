@@ -2,6 +2,8 @@ import React from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css'; // We will create this small CSS file
+import LanguageSwitcher from './LanguageSwitcher';
+
 
 const formatLoginTime = (isoString) => {
   if (!isoString || isoString === 'null') {
@@ -16,18 +18,18 @@ const formatLoginTime = (isoString) => {
       hour: 'numeric',
       minute: 'numeric',
       second: 'numeric',
-      hour12: true, // Use AM/PM
+      hour12: true, // Using AM/PM
     };
-    
-    // Use 'en-IN' for Indian English locale, passing in the options
+
+    // Using 'en-IN' for Indian English locale, passing in the options
     return new Date(isoString).toLocaleString('en-IN', options);
   } catch (e) {
-    console.error("Failed to parse date", isoString);
+    console.error('Failed to parse date', isoString); // eslint-disable-line no-console
     return null;
   }
 };
 
-const Navbar = () => {
+function Navbar() {
   const { isAuthenticated, logout, lastLogin } = useAuth();
   const navigate = useNavigate();
 
@@ -44,16 +46,19 @@ const Navbar = () => {
         PortScanner
       </Link>
       <div className="nav-links">
+        <LanguageSwitcher />
         {isAuthenticated ? (
           <>
             {displayLoginTime && (
               <span className="nav-last-login">
-                Last login: {displayLoginTime}
+                Last login:
+                {' '}
+                {displayLoginTime}
               </span>
             )}
-            
+
             <NavLink to="/">Home</NavLink>
-            <button onClick={handleLogout} className="nav-button">
+            <button type="button" onClick={handleLogout} className="nav-button">
               Logout
             </button>
           </>
@@ -66,6 +71,6 @@ const Navbar = () => {
       </div>
     </nav>
   );
-};
+}
 
 export default Navbar;

@@ -1,6 +1,7 @@
 import re
 import ipaddress
 
+
 def parse_ports(port_string):
     """
     Parses and validates a port string into a list of integers.
@@ -8,7 +9,7 @@ def parse_ports(port_string):
     ports = set()
     if not port_string:
         return []
-    
+
     parts = port_string.split(',')
     for part in parts:
         part = part.strip()
@@ -28,8 +29,9 @@ def parse_ports(port_string):
                 ports.add(port)
             except ValueError:
                 raise ValueError(f"Invalid port number: {part}")
-    
+
     return sorted(list(ports))
+
 
 def validate_ip_address(ip_addr):
     """
